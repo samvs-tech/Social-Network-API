@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, model, Types } from "mongoose";
+import { Schema, Document, model, Types } from "mongoose";
 
 
 interface IThought extends Document {
@@ -63,7 +63,7 @@ const thoughtSchema = new Schema<IThought> (
             required: true,
         },
         reactions: {
-            type: [reactionSchema],
+            type: [reactionSchema as any],
             default: [],
         },
     },
