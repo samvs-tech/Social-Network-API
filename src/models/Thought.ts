@@ -1,10 +1,11 @@
-import { Schema, Document, model, Types } from "mongoose";
+import mongoose, { Schema, Document, model, Types } from "mongoose";
 
 
 interface IThought extends Document {
     thoughtText: string;
     createdAt: Date;
     username: string;
+    userId: mongoose.Types.ObjectId;
     reactions: Types.ObjectId[];
 }
 
@@ -62,6 +63,11 @@ const thoughtSchema = new Schema<IThought> (
             type: String,
             required: true,
         },
+        userId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+          },
         reactions: {
             type: [reactionSchema as any],
             default: [],

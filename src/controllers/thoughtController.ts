@@ -53,6 +53,54 @@ export const getThoughtById = async (req: Request, res: Response): Promise<Respo
         return res.status(500).json({ message: 'Failed to create thought', error: err });
       }
     };
+
+    export const deleteThought = async (req: Request, res: Response): Promise<Response> => {
+      try {
+        const { id } = req.params;
+    
+        const thought = await Thought.findByIdAndDelete(id);
+        if (!thought) {
+          return res.status(404).json({ message: "Thought not found" });
+        }
+    
+        await User.updateOne({ _id: thought.userId }, { $pull: { thoughts: id } });
+    
+        return res.status(200).json({ message: 'Thought deleted successfully' });
+      } catch (err) {
+        console.error(err);
+        return res
+          .status(500)
+          .json({ message: 'Failed to delete thought', error: err });
+      }
+    };
+
+    export const updateThought = async (req: Request, res: Response): Promise<Response> => {
+      try {
+        const { id } = req.params;
+        const thought = await Thought.findByIdAndUpdate(id, req.body, {
+          new: true,
+          runValidators: true,
+        });
+        if (!thought) {
+          return res.status(400).json({ message: 'Thought not found' });
+        } 
+        if (thought.userId) {
+          const user = await User.findById(thought.userId);
+    
+          if (user) {
+            await user.save();
+          }
+        }
+        return res
+          .status(200)
+          .json({ message: 'Thought updated successfully', thought });
+      } catch (err) {
+        console.error(err);
+        return res
+          .status(500)
+          .json({ message: 'Failed to delete thought', error: err });
+      }
+    };
     
   export const addReaction = async (req: Request, res: Response): Promise<Response> => {
     try {
